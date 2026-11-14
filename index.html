@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Management System</title>
+<style>
+body {
+  font-family: Arial;
+  background: #eaf2ff;
+  text-align: center;
+  padding: 25px;
+}
+.container {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 600px;
+  margin: auto;
+}
+input, button {
+  padding: 10px;
+  margin: 6px;
+}
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+li {
+  background: #f1f5f9;
+  margin: 8px;
+  padding: 10px;
+  list-style: none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🎓 Student Management System</h1>
+
+<input id="roll" placeholder="Roll Number">
+<input id="name" placeholder="Student Name">
+<input id="dept" placeholder="Department">
+
+<br>
+<button onclick="addStudent()">Add Student</button>
+
+<h2>Student List</h2>
+<input id="search" placeholder="Search Roll Number"
+oninput="displayStudents()">
+
+<ul id="list"></ul>
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem("students") || "[]");
+
+function save() {
+  localStorage.setItem("students", JSON.stringify(students));
+}
+
+function addStudent() {
+  let roll = document.getElementById("roll").value.trim();
+  let name = document.getElementById("name").value.trim();
+  let dept = document.getElementById("dept").value.trim();
+
+  if (!roll || !name || !dept) {
+    alert("Please fill all details!");
+    return;
+  }
+
+  if (students.some(s => s.roll === roll)) {
+    alert("Roll number already exists!");
+    return;
+  }
+
+  students.push({roll, name, dept});
+  save();
+  displayStudents();
+
+  document.getElementById("roll").value = "";
+  document.getElementById("name").value = "";
+  document.getElementById("dept").value = "";
+}
+
+function deleteStudent(roll) {
+  students = students.filter(s => s.roll !== roll);
+  save();
+  displayStudents();
+}
+
+function displayStudents() {
+  let search = document.getElementById("search").value.toLowerCase();
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  students.filter(s => s.roll.toLowerCase().includes(search))
+  .forEach(s => {
+    let li = document.createElement("li");
+    li.textContent = s.roll + " | " + s.name + " | " + s.dept + " ";
+
+    let btn = document.createElement("button");
+    btn.textContent = "Delete";
+    btn.onclick = () => deleteStudent(s.roll);
+
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+displayStudents();
+</script>
+</body>
+</html>
